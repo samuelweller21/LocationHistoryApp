@@ -3,6 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet'
 import { useState } from 'react';
 import Prototype from "./Components/Prototype.jsx"
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 

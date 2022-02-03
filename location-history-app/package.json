@@ -7,8 +7,10 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.24.0",
+    "google-map-react": "^2.1.10",
     "leaflet": "^1.7.1",
     "react": "^17.0.2",
+    "react-datepicker": "^4.6.0",
     "react-dom": "^17.0.2",
     "react-leaflet": "^3.2.2",
     "react-scripts": "5.0.0",
@@ -37,5 +39,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@iconify/icons-mdi": "^1.1.42",
+    "@iconify/react": "^3.1.2"
   }
 }
