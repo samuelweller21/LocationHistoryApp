@@ -2,6 +2,15 @@
   width: 100wh; 
   height: 100vh;
 }
+.pad10 {
+  padding: 10;
+  margin: 10;
+}
+
+.my-modal {
+  width: 90vw; 
+  max-width: 90vw!important;
+} 
 
 .App {
   text-align: center;
