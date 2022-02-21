@@ -1,7 +1,7 @@
 
 import React, { Component, useEffect, useState } from 'react'
 import LocationService from '../api/LocationService';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, ZoomControl } from 'react-leaflet'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import 'react-tabs/style/react-tabs.css';
@@ -10,11 +10,15 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import Location from './Location.js'
 import 'leaflet/dist/leaflet.css'
 import KnownLocation from './KnownLocation'
-import { Button, InputGroup, Row, Col, FormControl, Container } from 'react-bootstrap'
+import { Button, InputGroup, Row, Col, FormControl, Container, Form, FormCheck } from 'react-bootstrap'
 import '../App.css'
 import { Modal } from 'react-bootstrap'
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import RangeSlider from 'react-bootstrap-range-slider';
+import { geosearch } from 'esri-leaflet-geocoder'
+import EsriLeafletGeoSearch from "react-esri-leaflet/plugins/EsriLeafletGeoSearch"
+import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css'
+import { BasemapLayer, FeatureLayer } from 'react-esri-leaflet'
 
 class KnownLocations extends Component {
 
@@ -25,8 +29,10 @@ class KnownLocations extends Component {
             timestamp: 1,
             date: null,
             create: false,
-            modalPosition: [51.505, -0.09],
+            modalPosition: [0, 0],
             modalRange: 50,
+            drawCircles: false,
+            loading: false
         }
 
         // Function binings
@@ -51,11 +57,16 @@ class KnownLocations extends Component {
     }
 
     getLocation() {
+        this.setState({ loading: true })
         LocationService.getLocation().then(res => {
             this.setState({ position: [res.data.lat, res.data.lng], timestamp: res.data.timestamp })
             const { map } = this.state;
             if (map) map.flyTo(this.state.position);
-        }).catch(e => console.log(e))
+            this.setState({ loading: false })
+        }).catch(e => {
+            console.log(e)
+            this.setState({ loading: false })
+        })
     }
 
     nextLocation() {
@@ -76,40 +87,41 @@ class KnownLocations extends Component {
     }
 
     deleteKnownLocation(name) {
+        this.setState({ loading: true })
         LocationService.deleteKnownLocation(name).then((res1) => {
             LocationService.getKnownLocations().then((res2) => {
                 this.setState({ locations: res2.data }, () => console.log(this.state.locations))
+                this.setState({ loading: false })
             })
+        }).catch(e => {
+            console.log(e)
+            this.setState({ loading: false })
         })
 
     }
 
     render() {
         // Hard code in height and width for now
-        let style = { width: 1500, height: 800 }
+        let style = { width: 0.8*window.innerWidth, height: 0.82*window.innerHeight }
 
         return (
             <div>
-                <div className="row">
-                    <div className="col-lg-4">
-                        <Button onClick={() => this.setState({ create: true })} style={{ margin: 7 }}> Create new Known Location </Button>
-                    </div>
-                </div>
-                <div className="divider">
-
-                </div>
-                <div class="row">
-                    <div class="col-lg-2">
+            <Container fluid="xs">
+  
+                <Row>
+                    <Col xs={2}>
+                    <Button onClick={() => this.setState({ create: true })} style={{ margin: 7 }}> Create new Known Location </Button>
                         {(this.state.locations == null) ? [] : this.state.locations.map((loc) =>
                             <KnownLocation
                                 name={loc.name}
                                 clickCallback={() => this.knownLocationClicked(loc.lat, loc.lng)}
                                 deleteCallback={() => this.deleteKnownLocation(loc.name)}
                             />)}
-                    </div>
-                    <div class="col-lg-10">
+                        {this.state.loading ? <Button variant="warning"> Waiting for server </Button> : null}
+                    </Col>
+                    <Col xs={10}>
                         <MapContainer
-                            style={{ width: this.state.width / 2, height: this.state.height / 2 }}
+                            style={style}
                             center={this.state.position}
                             zoom={13}
                             scrollWheelZoom={true}
@@ -118,14 +130,39 @@ class KnownLocations extends Component {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
+                            {/* <BasemapLayer name="DarkGray" /> */}
+                            {/* <FeatureLayer url={"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"} /> */}
 
-                            <Marker position={this.state.position}>
-                                <Popup>Lat: {this.state.position[0]} , Lng: {this.state.position[1]} </Popup>
-                            </Marker>
+                            <ZoomControl position="topright"></ZoomControl>
+
+                            {/* <EsriLeafletGeoSearch useMapBounds={false} position="topright" /> */}
+
+                            {(this.state.drawCircles) ? this.state.locations.map(loc =>
+                                <Circle center={[loc.lat, loc.lng]} radius={loc.radius} />)
+                                : null}
+
+                            {(this.state.locations != null) ? this.state.locations.map(loc =>
+                                <Marker position={[loc.lat, loc.lng]}>
+                                    <Popup>
+                                        Name: {loc.name} <dd></dd>
+                                        Description: {loc.description} <dd></dd>
+                                        Lat: {loc.lat} <dd></dd>
+                                        Lng: {loc.lng}  <dd></dd>
+                                    </Popup>
+                                </Marker>
+                            ) : null}
 
                         </MapContainer>
-                    </div>
-                </div>
+                        <Form>
+                            <Form.Check
+                                type={'checkbox'}
+                                label={`Draw boundaries`}
+                                onClick={(event) => { this.setState({ drawCircles: event.target.checked }) }}
+                            />
+                        </Form>
+                    </Col>
+                </Row>
+                </Container>
 
                 {/* Modal */}
 
@@ -158,6 +195,7 @@ class KnownLocations extends Component {
                                 />
 
                                 <FormControl
+                                    style={{ margin: 10 }}
                                     value={this.state.modalRange}
                                     onChange={changeEvent => this.setState({ modalRange: changeEvent.target.value })}
                                     placeholder="Location"
@@ -178,11 +216,11 @@ class KnownLocations extends Component {
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
 
-                                <Circle center={this.state.modalPosition} radius={this.state.modalRange} />
+                                {(this.state.modalPosition != null) ? <Circle center={this.state.modalPosition} radius={this.state.modalRange} /> : null}
 
                                 <ModalMarker updateModalPosition={this.updateModalPosition} position={this.state.modalPosition}>
                                     <Popup>Lat: {this.state.modalPosition[0]} , Lng: {this.state.modalPosition[1]} </Popup>
-                                </ModalMarker>
+                                </ModalMarker> : null
 
                             </MapContainer>
                         </Modal.Body>
@@ -191,18 +229,22 @@ class KnownLocations extends Component {
                                 Cancel
                             </Button>
                             <Button onClick={() => {
+                                this.setState({ loading: true })
                                 this.setState({ create: false })
                                 LocationService.createKnownLocation(this.state.klName, this.state.modalPosition[0], this.state.modalPosition[1], this.state.modalRange).then(() => {
                                     LocationService.getKnownLocations().then((res2) => {
                                         this.setState({ locations: res2.data }, () => console.log(this.state.locations))
+                                        this.setState({ loading: false })
                                     })
+                                }).catch(e => {
+                                    console.log(e)
+                                    this.setState({ loading: false })
                                 })
                             }} variant="success">
                                 Create
                             </Button>
                         </Modal.Footer>
                     </Modal> : null}
-
             </div>
         )
     }

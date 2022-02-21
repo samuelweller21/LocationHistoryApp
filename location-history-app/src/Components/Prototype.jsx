@@ -5,8 +5,7 @@ import 'react-tabs/style/react-tabs.css';
 import DateTimeTab from './DateTimeTab.jsx'
 import KnownLocations from './KnownLocations.jsx'
 import 'leaflet/dist/leaflet.css'
-
-import "./map.css"
+import '../App.css'
 
 class Prototype extends Component {
 
@@ -18,12 +17,12 @@ class Prototype extends Component {
         return (
             <div>
 
-                <h1>Welcome to this app</h1>
+                <h1 style={{margin: 10}}>Welcome to this app</h1>
 
-                <Tabs>
+                <Tabs style={{margin: 15}}>
 
                     <TabList>
-                        <Tab>Date & Time</Tab>
+                        <Tab>Date</Tab>
                         <Tab>Known Locations</Tab>
                     </TabList>
 

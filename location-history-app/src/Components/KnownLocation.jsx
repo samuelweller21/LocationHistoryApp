@@ -9,7 +9,7 @@ import L from 'leaflet'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import Location from './Location.js'
 import 'leaflet/dist/leaflet.css'
-import { Button, Modal } from 'react-bootstrap'
+import { Button, Modal, Row } from 'react-bootstrap'
 
 class KnownLocation extends Component {
 
@@ -20,7 +20,7 @@ class KnownLocation extends Component {
 
     render() {
         return (
-            <div class="row">
+            <Row style={{margin: 5}}>
 
                 <div class="col-lg-4">
                     <a style={{ cursor: 'pointer' }} onClick={this.props.clickCallback}><u>{this.props.name}</u></a>
@@ -54,7 +54,7 @@ class KnownLocation extends Component {
                     </Modal>
                     : null}
 
-            </div>
+            </Row>
         )
     }
 
