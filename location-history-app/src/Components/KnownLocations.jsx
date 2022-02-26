@@ -27,12 +27,19 @@ class KnownLocations extends Component {
         this.state = {
             position: [51.505, -0.09],
             timestamp: 1,
+            locations: [],
             date: null,
             create: false,
             modalPosition: [0, 0],
             modalRange: 50,
             drawCircles: false,
-            loading: false
+            loading: false,
+            edit: false,
+            editOldName: null,
+            editName: null,
+            editDesc: null,
+            editRange: null,
+            editPos: []
         }
 
         // Function binings
@@ -42,15 +49,19 @@ class KnownLocations extends Component {
         this.knownLocationClicked = this.knownLocationClicked.bind(this)
         this.deleteKnownLocation = this.deleteKnownLocation.bind(this)
         this.updateModalPosition = this.updateModalPosition.bind(this)
+        this.updateEditModalPosition = this.updateEditModalPosition.bind(this)
     }
 
     updateModalPosition(latlng) {
         this.setState({ modalPosition: [latlng.lat, latlng.lng] })
     }
 
+    updateEditModalPosition(latlng) {
+        this.setState({ editPos: [latlng.lat, latlng.lng] })
+    }
+
     componentDidMount() {
         LocationService.getKnownLocations().then((res) => {
-            console.log(res.data)
             this.setState({ locations: res.data })
         })
         this.setState({ width: window.innerWidth, height: window.innerHeight });
@@ -100,6 +111,11 @@ class KnownLocations extends Component {
 
     }
 
+    editKnownLocationClicked(name) {
+        let kl = this.state.locations.find(e => e.name === name)
+        this.setState({editOldName: name, edit: true, editName: kl.name, editPos: [kl.lat, kl.lng], editRange: kl.radius, editDesc: kl.description})
+    }
+
     render() {
         // Hard code in height and width for now
         let style = { width: 0.8*window.innerWidth, height: 0.82*window.innerHeight }
@@ -109,13 +125,14 @@ class KnownLocations extends Component {
             <Container fluid="xs">
   
                 <Row>
-                    <Col xs={2}>
+                    <Col align="center" xs={2}>
                     <Button onClick={() => this.setState({ create: true })} style={{ margin: 7 }}> Create new Known Location </Button>
                         {(this.state.locations == null) ? [] : this.state.locations.map((loc) =>
                             <KnownLocation
                                 name={loc.name}
                                 clickCallback={() => this.knownLocationClicked(loc.lat, loc.lng)}
                                 deleteCallback={() => this.deleteKnownLocation(loc.name)}
+                                editCallback={() => this.editKnownLocationClicked(loc.name)}
                             />)}
                         {this.state.loading ? <Button variant="warning"> Waiting for server </Button> : null}
                     </Col>
@@ -133,7 +150,7 @@ class KnownLocations extends Component {
                             {/* <BasemapLayer name="DarkGray" /> */}
                             {/* <FeatureLayer url={"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"} /> */}
 
-                            <ZoomControl position="topright"></ZoomControl>
+                            {/* <ZoomControl position="topright"></ZoomControl> */}
 
                             {/* <EsriLeafletGeoSearch useMapBounds={false} position="topright" /> */}
 
@@ -177,11 +194,23 @@ class KnownLocations extends Component {
 
                                 <Row>
                                     <InputGroup className="mb-3">
-                                        <InputGroup.Text id="basic-addon1">Location Name</InputGroup.Text>
+                                        <InputGroup.Text id="basic-addon1">Name</InputGroup.Text>
                                         <FormControl
                                             onChange={(event) => this.setState({ klName: event.target.value })}
                                             placeholder="Location Name"
                                             aria-label="Location Name"
+                                            aria-describedby="basic-addon1"
+                                        />
+                                    </InputGroup>
+                                </Row>
+                                
+                                <Row>
+                                    <InputGroup className="mb-3">
+                                        <InputGroup.Text id="basic-addon1">Description</InputGroup.Text>
+                                        <FormControl
+                                            onChange={(event) => this.setState({ klDesc: event.target.value })}
+                                            placeholder="Location Description"
+                                            aria-label="Location Description"
                                             aria-describedby="basic-addon1"
                                         />
                                     </InputGroup>
@@ -216,7 +245,7 @@ class KnownLocations extends Component {
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
 
-                                {(this.state.modalPosition != null) ? <Circle center={this.state.modalPosition} radius={this.state.modalRange} /> : null}
+                                {(this.state.editModalPosition != null) ? <Circle center={this.state.editModalPosition} radius={this.state.editModalRange} /> : null}
 
                                 <ModalMarker updateModalPosition={this.updateModalPosition} position={this.state.modalPosition}>
                                     <Popup>Lat: {this.state.modalPosition[0]} , Lng: {this.state.modalPosition[1]} </Popup>
@@ -231,7 +260,7 @@ class KnownLocations extends Component {
                             <Button onClick={() => {
                                 this.setState({ loading: true })
                                 this.setState({ create: false })
-                                LocationService.createKnownLocation(this.state.klName, this.state.modalPosition[0], this.state.modalPosition[1], this.state.modalRange).then(() => {
+                                LocationService.createKnownLocation(this.state.klName, this.state.modalPosition[0], this.state.modalPosition[1], this.state.modalRange, this.state.klDesc).then(() => {
                                     LocationService.getKnownLocations().then((res2) => {
                                         this.setState({ locations: res2.data }, () => console.log(this.state.locations))
                                         this.setState({ loading: false })
@@ -242,6 +271,101 @@ class KnownLocations extends Component {
                                 })
                             }} variant="success">
                                 Create
+                            </Button>
+                        </Modal.Footer>
+                    </Modal> : null}
+
+                    {/* Edit model */}
+
+                    {(this.state.edit) ?
+                    <Modal dialogClassName="my-modal" show={this.state.edit} onHide={() => this.setState({ edit: false })}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Edit Known Location</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+
+                            <Container>
+
+                                <Row>
+                                    <InputGroup className="mb-3">
+                                        <InputGroup.Text id="basic-addon1">Name</InputGroup.Text>
+                                        <FormControl
+                                            value={this.state.editName}
+                                            onChange={(event) => this.setState({ editName: event.target.value })}
+                                            aria-label="Location Name"
+                                            aria-describedby="basic-addon1"
+                                        />
+                                    </InputGroup>
+                                </Row>
+                                
+                                <Row>
+                                    <InputGroup className="mb-3">
+                                        <InputGroup.Text id="basic-addon1">Description</InputGroup.Text>
+                                        
+                                        <FormControl
+                                            value={this.state.editDesc}
+                                            onChange={(event) => this.setState({ editDesc: event.target.value })}
+                                            placeholder="Location Description"
+                                            aria-label="Location Description"
+                                            aria-describedby="basic-addon1"
+                                        />
+                                    </InputGroup>
+                                </Row>
+
+                                <div>Range:</div>
+
+                                <RangeSlider
+                                    value={this.state.editRange}
+                                    onChange={changeEvent => this.setState({ editRange: changeEvent.target.value })}
+                                />
+
+                                <FormControl
+                                    style={{ margin: 10 }}
+                                    value={this.state.editRange}
+                                    onChange={changeEvent => this.setState({ editRange: changeEvent.target.value })}
+                                    aria-describedby="basic-addon1"
+                                />
+
+                            </Container>
+
+                            <MapContainer
+                                style={{ width: this.state.width * 0.88, height: this.state.height / 2 }}
+                                center={this.state.map.getCenter()}
+                                zoom={this.state.map.getZoom()}
+                                scrollWheelZoom={true}
+                                whenCreated={mapEdit => this.setState({ mapEdit }, () => this.state.mapEdit.flyTo(this.state.editPos))}>
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+
+                                {(this.state.editPos != null) ? <Circle center={this.state.editPos} radius={this.state.editRange} /> : null}
+
+                                <ModalMarker updateModalPosition={this.updateEditModalPosition} position={this.state.editPos}>
+                                    <Popup>Lat: {this.state.editPos[0]} , Lng: {this.state.editPos[1]} </Popup>
+                                </ModalMarker> : null
+
+                            </MapContainer>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button onClick={() => this.setState({ edit: false })} variant="secondary">
+                                Cancel
+                            </Button>
+                            <Button onClick={() => {
+                                this.setState({ loading: true })
+                                this.setState({ edit: false })
+                                LocationService.deleteKnownLocation(this.state.editOldName).then(
+                                LocationService.createKnownLocation(this.state.editName, this.state.editPos[0], this.state.editPos[1], this.state.editRange, this.state.editDesc).then(() => {
+                                    LocationService.getKnownLocations().then((res2) => {
+                                        this.setState({ locations: res2.data }, () => console.log(this.state.locations))
+                                        this.setState({ loading: false })
+                                    })
+                                })).catch(e => {
+                                    console.log(e)
+                                    this.setState({ loading: false })
+                                })
+                            }} variant="success">
+                                Save
                             </Button>
                         </Modal.Footer>
                     </Modal> : null}

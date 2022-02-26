@@ -29,6 +29,11 @@ class LocationService {
         return axios.post(`http://localhost:8080/getLocationOnDate/sweller`, {date})
     }
 
+    getLocationsOnDate(rawDate) {
+        let date = rawDate.toLocaleString()
+        return axios.post(`http://localhost:8080/getLocationsOnDate/sweller`, {date})
+    }
+
     // Known Locations
 
     getKnownLocations() {
@@ -40,9 +45,9 @@ class LocationService {
         return axios.post(`http://localhost:8080/removeKnownLocation/sweller/${name}`)
     }
 
-    createKnownLocation(name, lat, lng, radius) {
+    createKnownLocation(name, lat, lng, radius, desc) {
         console.log("Trying to create " + name + " : " + lat + " : " + lng)
-        return axios.post(`http://localhost:8080/addKnownLocation/sweller/${name}/${lat}/${lng}/${radius}`)
+        return axios.post(`http://localhost:8080/addKnownLocation/sweller/${name}/${lat}/${lng}/${radius}/${desc}`)
     }
 
     // Daily Summary

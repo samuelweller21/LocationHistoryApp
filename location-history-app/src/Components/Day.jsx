@@ -1,12 +1,14 @@
 
 import React, { Component } from 'react'
 import LocationService from '../api/LocationService';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Polyline } from 'react-leaflet'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import 'react-tabs/style/react-tabs.css';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { Button, InputGroup, Row, Col, FormControl, Container, Form, FormCheck } from 'react-bootstrap'
+import { hello_line } from '../res/hello.js'
+import L from 'leaflet';
 
 Date.prototype.addDays = function (days) {
     var date = new Date(this.valueOf());
@@ -28,13 +30,10 @@ class DateTimeTab extends Component {
             emptyDay: false,
             colours: null,
             drawCircles: false,
-            accuracy: 10
+            accuracy: 10,
+            lines: hello_line.map(i => [i[1], i[0]])
         }
-        this.getLocation = this.getLocation.bind(this)
-        this.nextLocation = this.nextLocation.bind(this)
-        this.previousLocation = this.previousLocation.bind(this)
-        this.nextDay = this.nextDay.bind(this)
-        this.previousDay = this.previousDay.bind(this)
+
     }
 
     componentDidMount() {
@@ -50,130 +49,19 @@ class DateTimeTab extends Component {
             })
     }
 
-    getLocation() {
-        LocationService.getLocation().then(res => {
-            this.setState({ position: [res.data.lat, res.data.lng], timestamp: res.data.timestamp, accuracy: res.data.accuracy })
-            const { map } = this.state;
-            if (map) map.flyTo(this.state.position);
-            this.setState({ loading: false })
-        }).catch(e => {
-            console.log(e)
-            this.setState({ loading: false })
-        })
-    }
-
-    nextLocation() {
-        this.setState({ loading: true })
-        LocationService.nextLocation(this.state.timestamp).then(res => {
-            this.setState({
-                position: [res.data.lat, res.data.lng],
-                timestamp: res.data.timestamp,
-                accuracy: res.data.accuracy,
-                date: new Date(res.data.timestamp * 1000).toString()
-            })
-            const { map } = this.state;
-            if (map) map.flyTo(this.state.position);
-        })
-        LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
-                this.setState({ dailySummary: res.data })
-            }
-            this.setState({ loading: false })
-        }).catch(e => {
-            console.log(e)
-            this.setState({ loading: false })
-        })
-    }
-
-    previousLocation() {
-        LocationService.previousLocation(this.state.timestamp).then(res => {
-            this.setState({
-                position: [res.data.lat, res.data.lng],
-                timestamp: res.data.timestamp,
-                accuracy: res.data.accuracy,
-                date: new Date(res.data.timestamp * 1000).toString()
-            })
-            const { map } = this.state;
-            if (map) map.flyTo(this.state.position);
-        }).catch(e => console.log(e))
-        LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
-                this.setState({ dailySummary: res.data })
-            }
-            this.setState({ loading: false })
-        }).catch(e => {
-            console.log(e)
-            this.setState({ loading: false })
-        })
-    }
-
-    nextDay() {
-        LocationService.nextDay(this.state.timestamp).then(res => {
-            this.setState({
-                position: [res.data.lat, res.data.lng],
-                timestamp: res.data.timestamp,
-                accuracy: res.data.accuracy,
-                date: new Date(res.data.timestamp * 1000).toString()
-            })
-            const { map } = this.state;
-            if (map) map.flyTo(this.state.position);
-        }).catch(e => console.log(e))
-        LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
-                this.setState({ dailySummary: res.data })
-            }
-            this.setState({ loading: false })
-        }
-        ).catch(e => {
-            console.log(e)
-            this.setState({ loading: false })
-        })
-    }
-
-    previousDay() {
-        LocationService.previousDay(this.state.timestamp).then(res => {
-            this.setState({
-                position: [res.data.lat, res.data.lng],
-                timestamp: res.data.timestamp,
-                accuracy: res.data.accuracy,
-                date: new Date(res.data.timestamp * 1000).toString()
-            })
-            const { map } = this.state;
-            if (map) map.flyTo(this.state.position);
-        }).catch(e => console.log(e))
-        LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
-                this.setState({ dailySummary: res.data });
-            }
-            this.setState({ loading: false })
-        }).catch(e => {
-            console.log(e)
-            this.setState({ loading: false })
-        })
-    }
-
-
     dateChanged(date) {
         this.setState({ loading: true })
-        LocationService.getDailySummary(date).then(res => {
-            if (res.data !== "") {
-                this.setState({ emptyDay: false })
-                this.setState({ dailySummary: res.data, date: date.toString() })
-                LocationService.getLocationOnDate(date.toLocaleDateString()).then(res => {
-                    if (res.data !== "") {
-                        this.setState({ emptyDay: false })
-                        this.setState({ position: [res.data.lat, res.data.lng], timestamp: res.data.timestamp, accuracy: res.data.accuracy }, () => {
-                            const { map } = this.state;
-                            if (map) map.flyTo(this.state.position);
-                            this.setState({ loading: false })
-                        })
-                    } else {
-                        this.setState({ emptyDay: true, loading: false })
-                    }
-                })
-            } else {
-                this.setState({ emptyDay: true, loading: false })
-            }
+        LocationService.getLocationsOnDate(date).then(res => {
+            this.setState({ emptyDay: false })
+            this.setState({ lines: res.data.map(l => [l.lat, l.lng]) })
+            this.setState({ points: res.data})
+            this.setState({ loading: false })
+            var latLngs = this.state.lines.map(function(pair) {
+                return new L.LatLng(pair[0], pair[1]);
+              });
+            this.state.map.fitBounds(
+                L.latLngBounds(latLngs)
+            )   
         }).catch(e => {
             this.setState({ loading: false })
             console.log(e)
@@ -242,11 +130,6 @@ class DateTimeTab extends Component {
                                     />}
                             </Row>
 
-                            <Row><Button style={{margin: 5}} onClick={this.getLocation}>Get location</Button></Row>
-                            <Row><Button style={{margin: 5}} onClick={this.nextLocation}>Next location</Button></Row>
-                            <Row><Button style={{margin: 5}} onClick={this.nextDay}>Next Day</Button></Row>
-                            <Row><Button style={{margin: 5}} onClick={this.previousLocation}>Previous location</Button></Row>
-                            <Row><Button style={{margin: 5}} onClick={this.previousDay}>Previous Day</Button></Row>
                             <Row>
                                 <label>{this.state.date}</label>
                                 {(this.state.dailySummary != null || this.state.dailySummary == "") ? this.state.dailySummary.map(ds =>
@@ -272,9 +155,11 @@ class DateTimeTab extends Component {
                                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
-                                {(this.state.drawCircles) ? 
-                                    <Circle center={[this.state.position[0], this.state.position[1]]} radius={this.state.accuracy} />
+                                {(this.state.drawCircles) ? this.state.points.map(l => 
+                                <Circle center={[l.lat, l.lng]} radius={l.accuracy} />
+                                )
                                     : null}
+                                <Polyline pathOptions={{color: 'blue'}} positions={this.state.lines} />
                                 <Marker position={this.state.position}>
                                     <Popup>
                                         Date/Time: {new Date(this.state.timestamp*1000).toString().substring(0,24)} 

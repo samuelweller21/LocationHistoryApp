@@ -27,7 +27,7 @@ class KnownLocation extends Component {
                 </div>
 
                 <div class="col-lg-3">
-                    <Button>Edit</Button>
+                    <Button onClick={() => this.props.editCallback()}>Edit</Button>
                 </div>
 
                 <div class="col-lg-3">
