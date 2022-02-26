@@ -28,9 +28,11 @@ class DateTimeTab extends Component {
             emptyDay: false,
             colours: null,
             drawCircles: false,
-            accuracy: 10
+            accuracy: 10,
+            width: window.innerWidth,
+            height: window.innerHeight
         }
-        this.getLocation = this.getLocation.bind(this)
+
         this.nextLocation = this.nextLocation.bind(this)
         this.previousLocation = this.previousLocation.bind(this)
         this.nextDay = this.nextDay.bind(this)
@@ -39,6 +41,10 @@ class DateTimeTab extends Component {
 
     componentDidMount() {
         this.setState({ loading: true })
+        // Rerender on resize
+        window.addEventListener('resize', () => {
+            this.setState({ height: window.innerHeight, width: window.innerWidth })
+        })
         LocationService.getFirstLastDates().then(res => {
             this.setState({ first: new Date(res.data[0]), last: new Date(res.data[1]) })
         }).then(
@@ -48,18 +54,6 @@ class DateTimeTab extends Component {
                 console.log(e)
                 this.setState({ loading: false })
             })
-    }
-
-    getLocation() {
-        LocationService.getLocation().then(res => {
-            this.setState({ position: [res.data.lat, res.data.lng], timestamp: res.data.timestamp, accuracy: res.data.accuracy })
-            const { map } = this.state;
-            if (map) map.flyTo(this.state.position);
-            this.setState({ loading: false })
-        }).catch(e => {
-            console.log(e)
-            this.setState({ loading: false })
-        })
     }
 
     nextLocation() {
@@ -192,8 +186,6 @@ class DateTimeTab extends Component {
 
 
     render() {
-        // Hard code in height and width for now
-        let style = { width: 0.8 * window.innerWidth, height: 0.85 * window.innerHeight }
         let datesGreen = null
         let datesRed = null
         let highlightWithRanges = null
@@ -242,11 +234,10 @@ class DateTimeTab extends Component {
                                     />}
                             </Row>
 
-                            <Row><Button style={{margin: 5}} onClick={this.getLocation}>Get location</Button></Row>
-                            <Row><Button style={{margin: 5}} onClick={this.nextLocation}>Next location</Button></Row>
-                            <Row><Button style={{margin: 5}} onClick={this.nextDay}>Next Day</Button></Row>
-                            <Row><Button style={{margin: 5}} onClick={this.previousLocation}>Previous location</Button></Row>
-                            <Row><Button style={{margin: 5}} onClick={this.previousDay}>Previous Day</Button></Row>
+                            <Row><Button style={{ margin: 5 }} onClick={this.nextLocation}>Next location</Button></Row>
+                            <Row><Button style={{ margin: 5 }} onClick={this.nextDay}>Next Day</Button></Row>
+                            <Row><Button style={{ margin: 5 }} onClick={this.previousLocation}>Previous location</Button></Row>
+                            <Row><Button style={{ margin: 5 }} onClick={this.previousDay}>Previous Day</Button></Row>
                             <Row>
                                 <label>{this.state.date}</label>
                                 {(this.state.dailySummary != null || this.state.dailySummary == "") ? this.state.dailySummary.map(ds =>
@@ -267,17 +258,17 @@ class DateTimeTab extends Component {
                             </Row>
                         </Col>
                         <Col xs={10}>
-                            <MapContainer style={style} center={this.state.position} zoom={13} scrollWheelZoom={true} whenCreated={map => this.setState({ map })}>
+                            <MapContainer style={{ width: 0.82 * this.state.width, height: 0.85 * this.state.height }} center={this.state.position} zoom={13} scrollWheelZoom={true} whenCreated={map => this.setState({ map })}>
                                 <TileLayer
                                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
-                                {(this.state.drawCircles) ? 
+                                {(this.state.drawCircles) ?
                                     <Circle center={[this.state.position[0], this.state.position[1]]} radius={this.state.accuracy} />
                                     : null}
                                 <Marker position={this.state.position}>
                                     <Popup>
-                                        Date/Time: {new Date(this.state.timestamp*1000).toString().substring(0,24)} 
+                                        Date/Time: {new Date(this.state.timestamp * 1000).toString().substring(0, 24)}
                                         <br />
                                         Lat: {this.state.position[0]}
                                         <br />

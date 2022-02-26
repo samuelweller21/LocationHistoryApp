@@ -31,13 +31,19 @@ class DateTimeTab extends Component {
             colours: null,
             drawCircles: false,
             accuracy: 10,
-            lines: hello_line.map(i => [i[1], i[0]])
+            lines: hello_line.map(i => [i[1], i[0]]),
+            width: window.innerWidth,
+            height: window.innerHeight
         }
 
     }
 
     componentDidMount() {
         this.setState({ loading: true })
+        // Rerender on resizes
+        window.addEventListener('resize', () => {
+            this.setState({ height: window.innerHeight, width: window.innerWidth })
+        })
         LocationService.getFirstLastDates().then(res => {
             this.setState({ first: new Date(res.data[0]), last: new Date(res.data[1]) })
         }).then(
@@ -47,6 +53,7 @@ class DateTimeTab extends Component {
                 console.log(e)
                 this.setState({ loading: false })
             })
+
     }
 
     dateChanged(date) {
@@ -54,14 +61,15 @@ class DateTimeTab extends Component {
         LocationService.getLocationsOnDate(date).then(res => {
             this.setState({ emptyDay: false })
             this.setState({ lines: res.data.map(l => [l.lat, l.lng]) })
-            this.setState({ points: res.data})
+            this.setState({ points: res.data })
             this.setState({ loading: false })
-            var latLngs = this.state.lines.map(function(pair) {
+            var latLngs = this.state.lines.map(function (pair) {
                 return new L.LatLng(pair[0], pair[1]);
-              });
+            });
             this.state.map.fitBounds(
-                L.latLngBounds(latLngs)
-            )   
+                L.latLngBounds(latLngs),
+                {padding: [50,50]}
+            )
         }).catch(e => {
             this.setState({ loading: false })
             console.log(e)
@@ -80,8 +88,6 @@ class DateTimeTab extends Component {
 
 
     render() {
-        // Hard code in height and width for now
-        let style = { width: 0.8 * window.innerWidth, height: 0.85 * window.innerHeight }
         let datesGreen = null
         let datesRed = null
         let highlightWithRanges = null
@@ -150,19 +156,19 @@ class DateTimeTab extends Component {
                             </Row>
                         </Col>
                         <Col xs={10}>
-                            <MapContainer style={style} center={this.state.position} zoom={13} scrollWheelZoom={true} whenCreated={map => this.setState({ map })}>
+                            <MapContainer style={{ width: 0.82 * this.state.width, height: 0.85 * this.state.height }} center={this.state.position} zoom={13} scrollWheelZoom={true} whenCreated={map => this.setState({ map })}>
                                 <TileLayer
                                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                 />
-                                {(this.state.drawCircles) ? this.state.points.map(l => 
-                                <Circle center={[l.lat, l.lng]} radius={l.accuracy} />
+                                {(this.state.drawCircles) ? this.state.points.map(l =>
+                                    <Circle center={[l.lat, l.lng]} radius={l.accuracy} />
                                 )
                                     : null}
-                                <Polyline pathOptions={{color: 'blue'}} positions={this.state.lines} />
+                                <Polyline pathOptions={{ color: 'blue' }} positions={this.state.lines} />
                                 <Marker position={this.state.position}>
                                     <Popup>
-                                        Date/Time: {new Date(this.state.timestamp*1000).toString().substring(0,24)} 
+                                        Date/Time: {new Date(this.state.timestamp * 1000).toString().substring(0, 24)}
                                         <br />
                                         Lat: {this.state.position[0]}
                                         <br />

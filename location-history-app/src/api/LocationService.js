@@ -4,10 +4,6 @@ class LocationService {
 
     // Moving around
 
-    getLocation() {
-        return axios.get("http://localhost:8080/location")
-    }
-
     nextLocation(timestamp) {
         return axios.get(`http://localhost:8080/nextLocation/sweller/${timestamp}`)
     }

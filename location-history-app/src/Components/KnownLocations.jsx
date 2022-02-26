@@ -39,9 +39,10 @@ class KnownLocations extends Component {
             editName: null,
             editDesc: null,
             editRange: null,
-            editPos: []
+            editPos: [],
+            height: window.innerHeight,
+            width: window.innerWidth
         }
-
         // Function binings
 
         this.getLocation = this.getLocation.bind(this)
@@ -61,6 +62,11 @@ class KnownLocations extends Component {
     }
 
     componentDidMount() {
+        // Rerender on resize
+        window.addEventListener('resize', () => {
+            this.setState({ height: window.innerHeight, width: window.innerWidth })
+        })
+
         LocationService.getKnownLocations().then((res) => {
             this.setState({ locations: res.data })
         })
@@ -113,72 +119,69 @@ class KnownLocations extends Component {
 
     editKnownLocationClicked(name) {
         let kl = this.state.locations.find(e => e.name === name)
-        this.setState({editOldName: name, edit: true, editName: kl.name, editPos: [kl.lat, kl.lng], editRange: kl.radius, editDesc: kl.description})
+        this.setState({ editOldName: name, edit: true, editName: kl.name, editPos: [kl.lat, kl.lng], editRange: kl.radius, editDesc: kl.description })
     }
 
     render() {
-        // Hard code in height and width for now
-        let style = { width: 0.8*window.innerWidth, height: 0.82*window.innerHeight }
-
         return (
             <div>
-            <Container fluid="xs">
-  
-                <Row>
-                    <Col align="center" xs={2}>
-                    <Button onClick={() => this.setState({ create: true })} style={{ margin: 7 }}> Create new Known Location </Button>
-                        {(this.state.locations == null) ? [] : this.state.locations.map((loc) =>
-                            <KnownLocation
-                                name={loc.name}
-                                clickCallback={() => this.knownLocationClicked(loc.lat, loc.lng)}
-                                deleteCallback={() => this.deleteKnownLocation(loc.name)}
-                                editCallback={() => this.editKnownLocationClicked(loc.name)}
-                            />)}
-                        {this.state.loading ? <Button variant="warning"> Waiting for server </Button> : null}
-                    </Col>
-                    <Col xs={10}>
-                        <MapContainer
-                            style={style}
-                            center={this.state.position}
-                            zoom={13}
-                            scrollWheelZoom={true}
-                            whenCreated={map => this.setState({ map })}>
-                            <TileLayer
-                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            {/* <BasemapLayer name="DarkGray" /> */}
-                            {/* <FeatureLayer url={"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"} /> */}
+                <Container fluid="xs">
 
-                            {/* <ZoomControl position="topright"></ZoomControl> */}
+                    <Row>
+                        <Col align="center" xs={2}>
+                            <Button onClick={() => this.setState({ create: true })} style={{ margin: 7 }}> Create new Known Location </Button>
+                            {(this.state.locations == null) ? [] : this.state.locations.map((loc) =>
+                                <KnownLocation
+                                    name={loc.name}
+                                    clickCallback={() => this.knownLocationClicked(loc.lat, loc.lng)}
+                                    deleteCallback={() => this.deleteKnownLocation(loc.name)}
+                                    editCallback={() => this.editKnownLocationClicked(loc.name)}
+                                />)}
+                            {this.state.loading ? <Button variant="warning"> Waiting for server </Button> : null}
+                        </Col>
+                        <Col xs={10}>
+                            <MapContainer
+                                style={{ width: 0.82 * this.state.width, height: 0.83 * this.state.height }}
+                                center={this.state.position}
+                                zoom={13}
+                                scrollWheelZoom={true}
+                                whenCreated={map => this.setState({ map })}>
+                                <TileLayer
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                {/* <BasemapLayer name="DarkGray" /> */}
+                                {/* <FeatureLayer url={"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"} /> */}
 
-                            {/* <EsriLeafletGeoSearch useMapBounds={false} position="topright" /> */}
+                                {/* <ZoomControl position="topright"></ZoomControl> */}
 
-                            {(this.state.drawCircles) ? this.state.locations.map(loc =>
-                                <Circle center={[loc.lat, loc.lng]} radius={loc.radius} />)
-                                : null}
+                                {/* <EsriLeafletGeoSearch useMapBounds={false} position="topright" /> */}
 
-                            {(this.state.locations != null) ? this.state.locations.map(loc =>
-                                <Marker position={[loc.lat, loc.lng]}>
-                                    <Popup>
-                                        Name: {loc.name} <dd></dd>
-                                        Description: {loc.description} <dd></dd>
-                                        Lat: {loc.lat} <dd></dd>
-                                        Lng: {loc.lng}  <dd></dd>
-                                    </Popup>
-                                </Marker>
-                            ) : null}
+                                {(this.state.drawCircles) ? this.state.locations.map(loc =>
+                                    <Circle center={[loc.lat, loc.lng]} radius={loc.radius} />)
+                                    : null}
 
-                        </MapContainer>
-                        <Form>
-                            <Form.Check
-                                type={'checkbox'}
-                                label={`Draw boundaries`}
-                                onClick={(event) => { this.setState({ drawCircles: event.target.checked }) }}
-                            />
-                        </Form>
-                    </Col>
-                </Row>
+                                {(this.state.locations != null) ? this.state.locations.map(loc =>
+                                    <Marker position={[loc.lat, loc.lng]}>
+                                        <Popup>
+                                            Name: {loc.name} <dd></dd>
+                                            Description: {loc.description} <dd></dd>
+                                            Lat: {loc.lat} <dd></dd>
+                                            Lng: {loc.lng}  <dd></dd>
+                                        </Popup>
+                                    </Marker>
+                                ) : null}
+
+                            </MapContainer>
+                            <Form>
+                                <Form.Check
+                                    type={'checkbox'}
+                                    label={`Draw boundaries`}
+                                    onClick={(event) => { this.setState({ drawCircles: event.target.checked }) }}
+                                />
+                            </Form>
+                        </Col>
+                    </Row>
                 </Container>
 
                 {/* Modal */}
@@ -203,7 +206,7 @@ class KnownLocations extends Component {
                                         />
                                     </InputGroup>
                                 </Row>
-                                
+
                                 <Row>
                                     <InputGroup className="mb-3">
                                         <InputGroup.Text id="basic-addon1">Description</InputGroup.Text>
@@ -275,9 +278,9 @@ class KnownLocations extends Component {
                         </Modal.Footer>
                     </Modal> : null}
 
-                    {/* Edit model */}
+                {/* Edit model */}
 
-                    {(this.state.edit) ?
+                {(this.state.edit) ?
                     <Modal dialogClassName="my-modal" show={this.state.edit} onHide={() => this.setState({ edit: false })}>
                         <Modal.Header closeButton>
                             <Modal.Title>Edit Known Location</Modal.Title>
@@ -297,11 +300,11 @@ class KnownLocations extends Component {
                                         />
                                     </InputGroup>
                                 </Row>
-                                
+
                                 <Row>
                                     <InputGroup className="mb-3">
                                         <InputGroup.Text id="basic-addon1">Description</InputGroup.Text>
-                                        
+
                                         <FormControl
                                             value={this.state.editDesc}
                                             onChange={(event) => this.setState({ editDesc: event.target.value })}
@@ -355,15 +358,15 @@ class KnownLocations extends Component {
                                 this.setState({ loading: true })
                                 this.setState({ edit: false })
                                 LocationService.deleteKnownLocation(this.state.editOldName).then(
-                                LocationService.createKnownLocation(this.state.editName, this.state.editPos[0], this.state.editPos[1], this.state.editRange, this.state.editDesc).then(() => {
-                                    LocationService.getKnownLocations().then((res2) => {
-                                        this.setState({ locations: res2.data }, () => console.log(this.state.locations))
+                                    LocationService.createKnownLocation(this.state.editName, this.state.editPos[0], this.state.editPos[1], this.state.editRange, this.state.editDesc).then(() => {
+                                        LocationService.getKnownLocations().then((res2) => {
+                                            this.setState({ locations: res2.data }, () => console.log(this.state.locations))
+                                            this.setState({ loading: false })
+                                        })
+                                    })).catch(e => {
+                                        console.log(e)
                                         this.setState({ loading: false })
                                     })
-                                })).catch(e => {
-                                    console.log(e)
-                                    this.setState({ loading: false })
-                                })
                             }} variant="success">
                                 Save
                             </Button>
