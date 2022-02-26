@@ -3,9 +3,11 @@ import React, { Component } from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import DateTimeTab from './DateTimeTab.jsx'
+import Day from './Day.jsx'
 import KnownLocations from './KnownLocations.jsx'
 import 'leaflet/dist/leaflet.css'
 import '../App.css'
+
 
 class Prototype extends Component {
 
@@ -24,6 +26,7 @@ class Prototype extends Component {
                     <TabList>
                         <Tab>Date</Tab>
                         <Tab>Known Locations</Tab>
+                        <Tab>Day</Tab>
                     </TabList>
 
                     <TabPanel>
@@ -31,6 +34,9 @@ class Prototype extends Component {
                     </TabPanel>
                     <TabPanel>
                         <KnownLocations></KnownLocations>
+                    </TabPanel>
+                    <TabPanel>
+                        <Day></Day>
                     </TabPanel>
                     
                 </Tabs>
