@@ -30,6 +30,15 @@ class LocationService {
         return axios.post(`http://localhost:8080/getLocationsOnDate/sweller`, {date})
     }
 
+    getAllLocations() {
+        return axios.get(`http://localhost:8080/getAllLocations/sweller`)
+    }
+
+    getVacations() {
+        let homeCountry = "United Kingdom"
+        return axios.get(`http://localhost:8080/getVacations/sweller/${homeCountry}`)
+    }
+
     // Known Locations
 
     getKnownLocations() {
