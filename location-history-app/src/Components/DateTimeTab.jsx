@@ -1,12 +1,11 @@
 
-import React, { Component } from 'react'
-import LocationService from '../api/LocationService';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet'
+import React, { Component } from 'react';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Circle, MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'react-tabs/style/react-tabs.css';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { Button, InputGroup, Row, Col, FormControl, Container, Form, FormCheck } from 'react-bootstrap'
+import LocationService from '../api/LocationService';
 
 Date.prototype.addDays = function (days) {
     var date = new Date(this.valueOf());
@@ -29,6 +28,7 @@ class DateTimeTab extends Component {
             colours: null,
             drawCircles: false,
             accuracy: 10,
+            dailySummary: [],
             width: window.innerWidth,
             height: window.innerHeight
         }
@@ -69,7 +69,7 @@ class DateTimeTab extends Component {
             if (map) map.flyTo(this.state.position);
         })
         LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
+            if (res.data !== "") {
                 this.setState({ dailySummary: res.data })
             }
             this.setState({ loading: false })
@@ -91,7 +91,7 @@ class DateTimeTab extends Component {
             if (map) map.flyTo(this.state.position);
         }).catch(e => console.log(e))
         LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
+            if (res.data !== "") {
                 this.setState({ dailySummary: res.data })
             }
             this.setState({ loading: false })
@@ -113,7 +113,7 @@ class DateTimeTab extends Component {
             if (map) map.flyTo(this.state.position);
         }).catch(e => console.log(e))
         LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
+            if (res.data !== "") {
                 this.setState({ dailySummary: res.data })
             }
             this.setState({ loading: false })
@@ -136,7 +136,7 @@ class DateTimeTab extends Component {
             if (map) map.flyTo(this.state.position);
         }).catch(e => console.log(e))
         LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
+            if (res.data !== "") {
                 this.setState({ dailySummary: res.data });
             }
             this.setState({ loading: false })
@@ -175,7 +175,7 @@ class DateTimeTab extends Component {
     }
 
     getDates(startDate, stopDate) {
-        var dateArray = new Array();
+        var dateArray = [];
         var currentDate = startDate;
         while (currentDate <= stopDate) {
             dateArray.push(new Date(currentDate));
@@ -240,8 +240,8 @@ class DateTimeTab extends Component {
                             <Row><Button style={{ margin: 5 }} onClick={this.previousDay}>Previous Day</Button></Row>
                             <Row>
                                 <label>{this.state.date}</label>
-                                {(this.state.dailySummary != null || this.state.dailySummary == "") ? this.state.dailySummary.map(ds =>
-                                    (ds.m == 0 && ds.h == 0) ? null : <div>
+                                {(this.state.dailySummary !== null || this.state.dailySummary === "") ? this.state.dailySummary.map(ds =>
+                                    (ds.m === 0 && ds.h === 0) ? null : <div>
                                         {ds.name} : {ds.h} hours {ds.m} minutes
                                     </div>) : null}
                                 {this.state.loading ? <Button variant="warning"> Waiting for server </Button> : null}

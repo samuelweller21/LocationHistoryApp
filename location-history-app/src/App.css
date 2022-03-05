@@ -60,3 +60,17 @@ margin10 {
   overflow-y: scroll;
 }
 
+.link {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  text-align: left;
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+}

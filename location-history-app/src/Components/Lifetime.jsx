@@ -1,13 +1,10 @@
 
-import React, { Component } from 'react'
-import LocationService from '../api/LocationService';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Polyline } from 'react-leaflet'
-import DatePicker from "react-datepicker";
+import React, { Component } from 'react';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
+import { Circle, MapContainer, TileLayer } from 'react-leaflet';
 import 'react-tabs/style/react-tabs.css';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { Button, InputGroup, Row, Col, FormControl, Container, Form, FormCheck } from 'react-bootstrap'
-import L from 'leaflet';
+import LocationService from '../api/LocationService';
 
 class DateTimeTab extends Component {
 

@@ -1,21 +1,17 @@
 
-import React, { Component } from 'react'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'leaflet/dist/leaflet.css';
+import React, { Component } from 'react';
+import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import DateTimeTab from './DateTimeTab.jsx'
-import Day from './Day.jsx'
-import KnownLocations from './KnownLocations.jsx'
-import 'leaflet/dist/leaflet.css'
-import '../App.css'
-import Lifetime from './Lifetime.jsx'
-import Countries from './Countries.jsx'
-import Settings from './Settings.jsx'
+import '../App.css';
+import Countries from './Countries.jsx';
+import DateTimeTab from './DateTimeTab.jsx';
+import Day from './Day.jsx';
+import KnownLocations from './KnownLocations.jsx';
+import Lifetime from './Lifetime.jsx';
+import Settings from './Settings.jsx';
 
 class Prototype extends Component {
-
-    constructor() {
-        super()
-    }
 
     render() {
         return (

@@ -1,15 +1,9 @@
 
-import React, { Component, useEffect, useState } from 'react'
-import LocationService from '../api/LocationService';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
-import DatePicker from "react-datepicker";
+import 'leaflet/dist/leaflet.css';
+import React, { Component } from 'react';
+import { Button, Col, Modal, Row } from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
 import 'react-tabs/style/react-tabs.css';
-import L from 'leaflet'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import Location from './Location.js'
-import 'leaflet/dist/leaflet.css'
-import { Button, Modal, Row } from 'react-bootstrap'
 
 class KnownLocation extends Component {
 
@@ -20,19 +14,19 @@ class KnownLocation extends Component {
 
     render() {
         return (
-            <Row style={{margin: 5}}>
+            <Row md={10} style={{margin: 5}}>
 
-                <div class="col-lg-4">
-                    <a style={{ cursor: 'pointer' }} onClick={this.props.clickCallback}><u>{this.props.name}</u></a>
-                </div>
+                <Col md={6}>
+                    <button className="link" onClick={this.props.clickCallback}><u>{this.props.name}</u></button>
+                </Col>
 
-                <div class="col-lg-3">
+                <Col md={3}>
                     <Button onClick={() => this.props.editCallback()}>Edit</Button>
-                </div>
+                </Col>
 
-                <div class="col-lg-3">
+                <Col md={3}>
                     <Button onClick={() => this.setState({areyousure: true})}>Delete</Button>
-                </div>
+                </Col>
 
                 {(this.state.areyousure) ?
                     <Modal show={this.state.areyousure} onHide={() => this.setState({areyousure: false})}>

@@ -1,14 +1,13 @@
 
-import React, { Component } from 'react'
-import LocationService from '../api/LocationService';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, Polyline } from 'react-leaflet'
+import L from 'leaflet';
+import React, { Component } from 'react';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer } from 'react-leaflet';
 import 'react-tabs/style/react-tabs.css';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { Button, InputGroup, Row, Col, FormControl, Container, Form, FormCheck } from 'react-bootstrap'
-import { hello_line } from '../res/hello.js'
-import L from 'leaflet';
+import LocationService from '../api/LocationService';
+import { hello_line } from '../res/hello.js';
 
 Date.prototype.addDays = function (days) {
     var date = new Date(this.valueOf());
@@ -77,7 +76,7 @@ class DateTimeTab extends Component {
     }
 
     getDates(startDate, stopDate) {
-        var dateArray = new Array();
+        var dateArray = [];
         var currentDate = startDate;
         while (currentDate <= stopDate) {
             dateArray.push(new Date(currentDate));
@@ -138,8 +137,8 @@ class DateTimeTab extends Component {
 
                             <Row>
                                 <label>{this.state.date}</label>
-                                {(this.state.dailySummary != null || this.state.dailySummary == "") ? this.state.dailySummary.map(ds =>
-                                    (ds.m == 0 && ds.h == 0) ? null : <div>
+                                {(this.state.dailySummary != null || this.state.dailySummary === "") ? this.state.dailySummary.map(ds =>
+                                    (ds.m === 0 && ds.h === 0) ? null : <div>
                                         {ds.name} : {ds.h} hours {ds.m} minutes
                                     </div>) : null}
                                 {this.state.loading ? <Button variant="warning"> Waiting for server </Button> : null}

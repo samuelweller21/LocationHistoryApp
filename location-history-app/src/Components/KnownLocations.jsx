@@ -1,24 +1,16 @@
 
-import React, { Component, useEffect, useState } from 'react'
-import LocationService from '../api/LocationService';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, ZoomControl } from 'react-leaflet'
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import 'react-tabs/style/react-tabs.css';
-import L from 'leaflet'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import Location from './Location.js'
-import 'leaflet/dist/leaflet.css'
-import KnownLocation from './KnownLocation'
-import { Button, InputGroup, Row, Col, FormControl, Container, Form, FormCheck } from 'react-bootstrap'
-import '../App.css'
-import { Modal } from 'react-bootstrap'
-import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
+import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css';
+import 'leaflet/dist/leaflet.css';
+import React, { Component, useState } from 'react';
+import { Button, Col, Container, Form, FormControl, InputGroup, Modal, Row } from 'react-bootstrap';
 import RangeSlider from 'react-bootstrap-range-slider';
-import { geosearch } from 'esri-leaflet-geocoder'
-import EsriLeafletGeoSearch from "react-esri-leaflet/plugins/EsriLeafletGeoSearch"
-import 'esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css'
-import { BasemapLayer, FeatureLayer } from 'react-esri-leaflet'
+import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
+import "react-datepicker/dist/react-datepicker.css";
+import { Circle, MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import 'react-tabs/style/react-tabs.css';
+import LocationService from '../api/LocationService';
+import '../App.css';
+import KnownLocation from './KnownLocation';
 
 class KnownLocations extends Component {
 
@@ -43,7 +35,6 @@ class KnownLocations extends Component {
             height: window.innerHeight,
             width: window.innerWidth
         }
-        // Function binings
 
         this.getLocation = this.getLocation.bind(this)
         this.nextLocation = this.nextLocation.bind(this)
@@ -128,16 +119,25 @@ class KnownLocations extends Component {
                 <Container fluid="xs">
 
                     <Row>
-                        <Col align="center" xs={2}>
-                            <Button onClick={() => this.setState({ create: true })} style={{ margin: 7 }}> Create new Known Location </Button>
+                        <Col xs={2}>
+                            <Row>
+                                <Button onClick={() => this.setState({ create: true })} style={{ margin: 7 }}> Create new Known Location </Button>
+                            </Row>
+                            <Row>
+                            <Col style={{height: 0.8*this.state.height}} xs={12} className="scrollable" >
                             {(this.state.locations == null) ? [] : this.state.locations.map((loc) =>
                                 <KnownLocation
+                                    key={loc.name}
                                     name={loc.name}
                                     clickCallback={() => this.knownLocationClicked(loc.lat, loc.lng)}
                                     deleteCallback={() => this.deleteKnownLocation(loc.name)}
                                     editCallback={() => this.editKnownLocationClicked(loc.name)}
                                 />)}
+                            </Col>
+                            </Row>
+                            <Row>
                             {this.state.loading ? <Button variant="warning"> Waiting for server </Button> : null}
+                            </Row>
                         </Col>
                         <Col xs={10}>
                             <MapContainer
@@ -357,6 +357,7 @@ class KnownLocations extends Component {
                             <Button onClick={() => {
                                 this.setState({ loading: true })
                                 this.setState({ edit: false })
+                                console.log("About to delete; " + this.state.editOldName)
                                 LocationService.deleteKnownLocation(this.state.editOldName).then(
                                     LocationService.createKnownLocation(this.state.editName, this.state.editPos[0], this.state.editPos[1], this.state.editRange, this.state.editDesc).then(() => {
                                         LocationService.getKnownLocations().then((res2) => {
@@ -377,19 +378,8 @@ class KnownLocations extends Component {
     }
 }
 
-function ModalMarker(props) {
-    const [position, setPosition] = useState({ latitude: 0, longitude: 0 });
-
-    const map = useMapEvents({
-        click(event) {
-            const { lat, lng } = event.latlng;
-            props.updateModalPosition(event.latlng)
-            setPosition({
-                latitude: lat,
-                longitude: lng,
-            });
-        },
-    });
+function ModalMarker() {
+    const [position] = useState({ latitude: 0, longitude: 0 });
 
     return (
         position.latitude !== 0 ? (

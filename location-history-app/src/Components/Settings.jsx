@@ -1,6 +1,6 @@
-import React, { Component, useState } from 'react'
-import {Dropdown, FormControl} from 'react-bootstrap'
-import { countries } from '../res/countries.js'
+import React, { Component, useState } from 'react';
+import { Dropdown, FormControl } from 'react-bootstrap';
+import { countries } from '../res/countries.js';
 
 const CustomMenu = React.forwardRef(
     ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {

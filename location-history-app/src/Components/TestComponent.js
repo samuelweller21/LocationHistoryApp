@@ -1,17 +1,13 @@
 import React from 'react';
-import { MapContainer, LayersControl, useMapEvents, ZoomControl } from 'react-leaflet';
-
 import {
-	BasemapLayer,
-	FeatureLayer,
-	DynamicMapLayer,
-	TiledMapLayer,
-	ImageMapLayer,
+	BasemapLayer, DynamicMapLayer, FeatureLayer, ImageMapLayer, TiledMapLayer
 } from 'react-esri-leaflet';
-
 import EsriLeafletGeoSearch from 'react-esri-leaflet/plugins/EsriLeafletGeoSearch';
 import VectorBasemapLayer from 'react-esri-leaflet/plugins/VectorBasemapLayer';
 import VectorTileLayer from 'react-esri-leaflet/plugins/VectorTileLayer';
+import { LayersControl, MapContainer, useMapEvents, ZoomControl } from 'react-leaflet';
+
+
 
 // Alternative imports for local build tests:
 
