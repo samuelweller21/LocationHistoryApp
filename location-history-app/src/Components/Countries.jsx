@@ -1,23 +1,15 @@
 
-import React, { Component } from 'react'
-import LocationService from '../api/LocationService';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet'
-import DatePicker from "react-datepicker";
+import React, { Component } from 'react';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
+import { Circle, MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import 'react-tabs/style/react-tabs.css';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { Button, InputGroup, Row, Col, FormControl, Container, Form, FormCheck } from 'react-bootstrap'
-import { countries } from '../res/countries.js'
+import LocationService from '../api/LocationService';
+import { countries } from '../res/countries.js';
 
 const monthNames = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
-
-Date.prototype.addDays = function (days) {
-    var date = new Date(this.valueOf());
-    date.setDate(date.getDate() + days);
-    return date;
-}
 
 class Countries extends Component {
 
@@ -30,6 +22,7 @@ class Countries extends Component {
             drawCircles: false,
             countries: countries,
             vacations: [],
+            dailySummary: [],
             width: window.innerWidth,
             height: window.innerHeight
         }
@@ -69,7 +62,7 @@ class Countries extends Component {
             if (map) map.flyTo(this.state.position);
         })
         LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
+            if (res.data !== "") {
                 this.setState({ dailySummary: res.data })
             }
             this.setState({ loading: false })
@@ -91,7 +84,7 @@ class Countries extends Component {
             if (map) map.flyTo(this.state.position);
         }).catch(e => console.log(e))
         LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
+            if (res.data !== "") {
                 this.setState({ dailySummary: res.data })
             }
             this.setState({ loading: false })
@@ -113,7 +106,7 @@ class Countries extends Component {
             if (map) map.flyTo(this.state.position);
         }).catch(e => console.log(e))
         LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
+            if (res.data !== "") {
                 this.setState({ dailySummary: res.data })
             }
             this.setState({ loading: false })
@@ -136,7 +129,7 @@ class Countries extends Component {
             if (map) map.flyTo(this.state.position);
         }).catch(e => console.log(e))
         LocationService.getDailySummary(new Date(this.state.date)).then(res => {
-            if (res.data != "") {
+            if (res.data !== "") {
                 this.setState({ dailySummary: res.data });
             }
             this.setState({ loading: false })
@@ -161,8 +154,8 @@ class Countries extends Component {
                             <Row><Button style={{ margin: 5 }} onClick={this.previousDay}>Previous Day</Button></Row>
                             <Row>
                                 <label>{this.state.date}</label>
-                                {(this.state.dailySummary != null || this.state.dailySummary == "") ? this.state.dailySummary.map(ds =>
-                                    (ds.m == 0 && ds.h == 0) ? null : <div>
+                                {(this.state.dailySummary !== null || this.state.dailySummary === "") ? this.state.dailySummary.map(ds =>
+                                    (ds.m === 0 && ds.h === 0) ? null : <div>
                                         {ds.name} : {ds.h} hours {ds.m} minutes
                                     </div>) : null}
                                 {this.state.loading ? <Button variant="warning"> Waiting for server </Button> : null}
