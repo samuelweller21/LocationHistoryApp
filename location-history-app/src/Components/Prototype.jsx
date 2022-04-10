@@ -8,6 +8,7 @@ import '../App.css';
 import Countries from './Countries.jsx';
 import DateTimeTab from './DateTimeTab.jsx';
 import Day from './Day.jsx';
+import Heatmap from './Heatmap.jsx';
 import KnownLocations from './KnownLocations.jsx';
 import Lifetime from './Lifetime.jsx';
 import LogInPage from './LogInPage';
@@ -37,6 +38,7 @@ class Prototype extends Component {
                             <Tab>Day</Tab>
                             <Tab>Lifetime</Tab>
                             <Tab>Vacations</Tab>
+                            <Tab>Heatmap</Tab>
                             <Tab>Settings</Tab>
                         </TabList>
 
@@ -54,6 +56,9 @@ class Prototype extends Component {
                         </TabPanel>
                         <TabPanel>
                             <Countries></Countries>
+                        </TabPanel>
+                        <TabPanel>
+                            <Heatmap></Heatmap>
                         </TabPanel>
                         <TabPanel>
                             <Settings></Settings>

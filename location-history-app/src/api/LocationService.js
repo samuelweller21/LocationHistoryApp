@@ -46,10 +46,10 @@ class LocationService {
         let ca = decodedCookie.split(';');
         for(let i = 0; i <ca.length; i++) {
           let c = ca[i];
-          while (c.charAt(0) == ' ') {
+          while (c.charAt(0) === ' ') {
             c = c.substring(1);
           }
-          if (c.indexOf(name) == 0) {
+          if (c.indexOf(name) === 0) {
             return c.substring(name.length, c.length);
           }
         }
@@ -83,11 +83,6 @@ class LocationService {
         return axios.post(this.getDomain() + `/getLocationOnDate`, {date})
     }
 
-    getLocationsOnDate(rawDate) {
-        let date = rawDate.toLocaleString()
-        return axios.post(this.getDomain() + `/getLocationsOnDate`, {date})
-    }
-
     getAllLocations() {
         return axios.get(this.getDomain() + `/getAllLocations`)
     }
@@ -95,6 +90,11 @@ class LocationService {
     getVacations() {
         let homeCountry = "United Kingdom"
         return axios.get(this.getDomain() + `/getVacations/${homeCountry}`)
+    }
+
+    getLocationsFromTo(startDate, endDate) {
+        let mix = [startDate, endDate]
+        return axios.post(this.getDomain() + `/getAllLocationsFromTo`, {mix})
     }
 
     // Known Locations
