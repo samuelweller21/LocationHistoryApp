@@ -30,7 +30,7 @@ class LogInPage extends Component {
         //     event.preventDefault();
         //     event.stopPropagation();
         // }
-
+        
         this.setState({validated: true})
 
         LocationService.authenticate(this.state.username, this.state.password).then((res) => {
