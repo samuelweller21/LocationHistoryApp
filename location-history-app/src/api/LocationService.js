@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { createBrowserHistory } from 'history';
 
 var SERVER = "http://localhost:8080"
 //const SERVER = "http://myfirstapp-env.eba-rygdbhqj.us-east-1.elasticbeanstalk.com"
@@ -6,23 +7,6 @@ var SERVER = "http://localhost:8080"
 class LocationService {
 
     constructor() {
-        let jwt = this.getCookie("jwt")
-        if (jwt !== "") {
-            axios.interceptors.request.use(
-                (config) => {
-                    config.headers.authorization = "Bearer " + jwt
-                    return config
-                }
-            )
-            axios.post(this.getDomain() + `/test`).then(() => {
-                localStorage.setItem("loggedIn", true)
-                // loggedIn = true
-            }).catch(() => {
-                localStorage.setItem("loggedIn", false)
-            })            
-        }
-
-        console.log("init")
         // axios.interceptors.request.use(request => {
         //     console.log('Starting Request', JSON.stringify(request, null, 2))
         //     return request
@@ -32,12 +16,28 @@ class LocationService {
         // return response
         // })
 
+        axios.interceptors.response.use(response => response, err => {
+            if (err.status = 403) {
+                // Go to log in page
+                console.log("going to login")
+                createBrowserHistory().push('/login');
+                window.location.reload();
+
+                }
+            console.log(err.status)
+            return Promise.reject(err)
+        })
+
     }
 
     // Authentication
 
     authenticate(username, password) {
         return axios.post(this.getDomain() + `/authenticate`, {username: username, password: password})
+    }
+
+    test() {
+        return axios.post(this.getDomain() + `/test`);
     }
 
     getCookie(cname) {

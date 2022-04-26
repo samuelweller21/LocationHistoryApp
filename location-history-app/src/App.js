@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
+import LogInPage from './Components/LogInPage';
 import Prototype from './Components/Prototype.jsx';
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -41,6 +42,11 @@ function App() {
         <Route exact path="/home">
           {console.log("Intercepted home")}
           <Prototype />
+        </Route>
+
+        <Route exact path="/login">
+          {console.log("Intercepted login")}
+          <LogInPage />
         </Route>
 
         <Route path="/">

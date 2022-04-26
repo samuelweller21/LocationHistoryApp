@@ -41,17 +41,10 @@ class LogInPage extends Component {
                 }
             )
             document.cookie = "jwt=" + res.data.jwt
-            console.log("Hello")
             console.log(document.cookie)
-            //console.log(this.getCookie("jwt"))
-            console.log("Hello")
-            localStorage.setItem("loggedIn", true)
-            console.log("Good");
-            console.log("Pushing")
             this.props.history.push("/home")
         }).catch(() => {
             console.log("Bad")
-            localStorage.setItem("loggedIn", false)
         })
     }
 
