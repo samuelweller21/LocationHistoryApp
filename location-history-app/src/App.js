@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
+import LandingPage from './Components/LandingPage/LandingPage';
 import LogInPage from './Components/LogInPage';
 import Prototype from './Components/Prototype.jsx';
 
@@ -47,6 +48,11 @@ function App() {
         <Route exact path="/login">
           {console.log("Intercepted login")}
           <LogInPage />
+        </Route>
+
+        <Route exact path="/welcome">
+          {console.log("Intercepted welcome")}
+          <LandingPage />
         </Route>
 
         <Route path="/">
