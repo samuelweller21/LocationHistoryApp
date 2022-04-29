@@ -16,13 +16,18 @@ class LocationService {
         // return response
         // })
 
+        axios.interceptors.request.use((request) => {
+            request.headers.authorization = "Bearer " + this.getCookie("jwt")
+            return request
+        })
+
         axios.interceptors.response.use(response => response, err => {
+            console.log(err)
             if (err.status = 403) {
                 // Go to log in page
                 console.log("going to login")
-                createBrowserHistory().push('/login');
+                createBrowserHistory().push('/login')
                 window.location.reload();
-
                 }
             console.log(err.status)
             return Promise.reject(err)
@@ -33,7 +38,15 @@ class LocationService {
     // Authentication
 
     authenticate(username, password) {
-        return axios.post(this.getDomain() + `/authenticate`, {username: username, password: password})
+        return axios.post(this.getDomain() + `/authenticate`, {username: username, password: password}).then((res) => {
+            document.cookie = "jwt=" + res.data.jwt
+            console.log(document.cookie)
+            createBrowserHistory().push("/home")
+            window.location.reload();
+        }).catch((err) => {
+            console.log(err)
+            console.log("Bad")
+        })
     }
 
     test() {

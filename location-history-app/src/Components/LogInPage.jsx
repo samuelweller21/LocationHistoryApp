@@ -1,5 +1,4 @@
 
-import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import React, { Component } from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
@@ -33,19 +32,7 @@ class LogInPage extends Component {
         
         this.setState({validated: true})
 
-        LocationService.authenticate(this.state.username, this.state.password).then((res) => {
-            axios.interceptors.request.use(
-                (config) => {
-                    config.headers.authorization = "Bearer " + res.data.jwt
-                    return config
-                }
-            )
-            document.cookie = "jwt=" + res.data.jwt
-            console.log(document.cookie)
-            this.props.history.push("/home")
-        }).catch(() => {
-            console.log("Bad")
-        })
+        LocationService.authenticate(this.state.username, this.state.password)
     }
 
     render() {

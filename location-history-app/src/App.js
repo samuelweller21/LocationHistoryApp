@@ -53,7 +53,7 @@ function App() {
         <Route exact path="/welcome">
           {console.log("Intercepted welcome")}
           <LandingPage />
-        </Route>
+        </Route>  
 
         <Route path="/">
           {console.log("Intercepted nothing")}
@@ -61,7 +61,7 @@ function App() {
         </Route>
 
         <Route>
-          <Prototype />
+          {console.log("Error")}
         </Route>
       </Switch>
     </Router>

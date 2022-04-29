@@ -21,38 +21,42 @@ class LandingPage extends Component {
 
                     <div style={{ height: 100 }}> </div>
 
-                    <div>
-                        <a href="/home" class="cta">
-                            <span>Try me</span>
-                            <svg width="13px" height="10px" viewBox="0 0 13 10">
-                                <path d="M1,5 L11,5"></path>
-                                <polyline points="8 1 12 5 8 9"></polyline>
-                            </svg>
-                        </a>
-                    </div>
+                    <div style={{margin: "0 auto", width: "180px"}}>
 
-                    <div style={{ height: 100 }}> </div>
+                        <div style={{margin: "0 auto"}}>
+                            <a href="/home" class="cta">
+                                <span>Try it</span>
+                                <svg width="13px" height="10px" viewBox="0 0 13 10">
+                                    <path d="M1,5 L11,5"></path>
+                                    <polyline points="8 1 12 5 8 9"></polyline>
+                                </svg>
+                            </a>
+                        </div>
 
-                    <div>
-                        <a href="#" class="cta">
-                            <span>Log In</span>
-                            <svg width="13px" height="10px" viewBox="0 0 13 10">
-                                <path d="M1,5 L11,5"></path>
-                                <polyline points="8 1 12 5 8 9"></polyline>
-                            </svg>
-                        </a>
-                    </div>
+                        <div style={{ height: 100 }}> </div>
 
-                    <div style={{ height: 100 }}> </div>
+                        <div>
+                            <a href="#" class="cta">
+                                <span>Log In</span>
+                                <svg width="13px" height="10px" viewBox="0 0 13 10">
+                                    <path d="M1,5 L11,5"></path>
+                                    <polyline points="8 1 12 5 8 9"></polyline>
+                                </svg>
+                            </a>
+                        </div>
 
-                    <div>
-                        <a href="#" class="cta">
-                            <span>Sign Up</span>
-                            <svg width="13px" height="10px" viewBox="0 0 13 10">
-                                <path d="M1,5 L11,5"></path>
-                                <polyline points="8 1 12 5 8 9"></polyline>
-                            </svg>
-                        </a>
+                        <div style={{ height: 100 }}> </div>
+
+                        <div style={{margin: "0 auto"}}>
+                            <a href="#" class="cta">
+                                <span>Sign Up</span>
+                                <svg width="13px" height="10px" viewBox="0 0 13 10">
+                                    <path d="M1,5 L11,5"></path>
+                                    <polyline points="8 1 12 5 8 9"></polyline>
+                                </svg>
+                            </a>
+                        </div>
+
                     </div>
 
                 </div>
