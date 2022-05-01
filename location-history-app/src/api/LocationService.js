@@ -23,11 +23,20 @@ class LocationService {
 
         axios.interceptors.response.use(response => response, err => {
             console.log(err)
-            if (err.status = 403) {
+            console.log(err.status)
+            if (err.status == 403) {
                 // Go to log in page
-                console.log("going to login")
-                createBrowserHistory().push('/login')
-                window.location.reload();
+
+                if (this.getCookie("jwt").length > 5) {
+                    //JWT exists
+                    console.log("going to login")
+                    createBrowserHistory().push('/login/invalidCredentials')
+                    window.location.reload();
+                } else {
+                    console.log("going to welcome")
+                    createBrowserHistory().push('/welcome')
+                    window.location.reload();
+                }
                 }
             console.log(err.status)
             return Promise.reject(err)
@@ -35,17 +44,53 @@ class LocationService {
 
     }
 
+    changePassword(username, password, jwt) {
+        const raw_axios = axios.create()
+        return raw_axios.post(this.getDomain() + `/updatePassword`, {username: username, password: password, jwt: jwt})
+    }
+
+    resetPassword(username) {
+        const raw_axios = axios.create()
+        return raw_axios.post(this.getDomain() + `/resetPassword`, {email: username})
+    }
+
+    createUserGetUsername(jwt) {
+        const raw_axios = axios.create()
+        return raw_axios.post(this.getDomain() + `/createUserGetUsername`, {jwt: jwt})
+    }
+
+    createUserGetJWT(username) {
+        console.log("About to get JWt")
+        const raw_axios = axios.create()
+        return raw_axios.post(this.getDomain() + `/createUserGetJWT`, {email: username})
+    }
+
+    getUsername() {
+        return axios.get(this.getDomain() + `/getUsername`)
+    }
+
+    createUser(username, password, jwt) {
+        const raw_axios = axios.create()
+        return raw_axios.post(this.getDomain() + `/createUser`, {username: username, password: password, jwt: jwt})
+    }
+
     // Authentication
 
     authenticate(username, password) {
-        return axios.post(this.getDomain() + `/authenticate`, {username: username, password: password}).then((res) => {
-            document.cookie = "jwt=" + res.data.jwt
+
+        // Provide no auth header.  Issue with spring security is if you provide an invalid auth header it will reject even if to a permitted url
+        const raw_axios = axios.create()
+        
+        return raw_axios.post(this.getDomain() + `/authenticate`, {username: username, password: password}).then((res) => {
+            document.cookie = "jwt=" + res.data.jwt + "; path=/"
             console.log(document.cookie)
             createBrowserHistory().push("/home")
             window.location.reload();
         }).catch((err) => {
             console.log(err)
             console.log("Bad")
+            createBrowserHistory().push('/login/invalidCredentials')
+            window.location.reload();
         })
     }
 

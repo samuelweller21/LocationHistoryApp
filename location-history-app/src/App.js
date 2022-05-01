@@ -4,9 +4,12 @@ import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
+import EmailConfirmation from './Components/EmailConfirmation';
 import LandingPage from './Components/LandingPage/LandingPage';
 import LogInPage from './Components/LogInPage';
 import Prototype from './Components/Prototype.jsx';
+import ResetPassword from './Components/resetPassword';
+import SignUpPage from './Components/SignUpPage';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -41,30 +44,38 @@ function App() {
     <Router>
       <Switch>
         <Route exact path="/home">
-          {console.log("Intercepted home")}
           <Prototype />
         </Route>
 
-        <Route exact path="/login">
-          {console.log("Intercepted login")}
+        <Route path="/login/:error">
           <LogInPage />
         </Route>
 
+        <Route path="/login">
+          <LogInPage />
+        </Route>
+
+        <Route path="/resetPassword/:code">
+          <ResetPassword />
+        </Route>
+        
         <Route exact path="/welcome">
-          {console.log("Intercepted welcome")}
           <LandingPage />
-        </Route>  
+        </Route>
+
+        <Route exact path="/signup">
+          <SignUpPage />
+        </Route>
+
+        <Route path="/emailconfirmation/:code">
+          <EmailConfirmation />
+        </Route>
 
         <Route path="/">
-          {console.log("Intercepted nothing")}
           <Prototype />
         </Route>
-
-        <Route>
-          {console.log("Error")}
-        </Route>
       </Switch>
-    </Router>
+    </Router >
   );
 }
 

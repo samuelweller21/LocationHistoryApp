@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
+import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <div style={{margin: "10px 0px 0px 0px"}}>
+      <App />
+    </div>
   </React.StrictMode>,
   document.getElementById('root')
 );

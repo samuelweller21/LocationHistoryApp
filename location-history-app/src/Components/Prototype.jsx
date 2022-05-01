@@ -19,6 +19,9 @@ class Prototype extends Component {
 
     constructor() {
         super()
+
+        document.title = "Location History Viewer - Home"
+
         LocationService.test()
     }
 
@@ -32,13 +35,13 @@ class Prototype extends Component {
                 <Tabs style={{ margin: 15 }}>
 
                     <TabList>
-                        <Tab>Date</Tab>
-                        <Tab>Known Locations</Tab>
-                        <Tab>Day</Tab>
-                        <Tab>Lifetime</Tab>
-                        <Tab>Vacations</Tab>
-                        <Tab>Heatmap</Tab>
-                        <Tab>Settings</Tab>
+                        <Tab style={{background: "rgba(0,0,0,0)"}}>Date</Tab>
+                        <Tab style={{background: "rgba(0,0,0,0)"}}>Known Locations</Tab>
+                        <Tab style={{background: "rgba(0,0,0,0)"}}>Day</Tab>
+                        <Tab style={{background: "rgba(0,0,0,0)"}}>Lifetime</Tab>
+                        <Tab style={{background: "rgba(0,0,0,0)"}}>Vacations</Tab>
+                        <Tab style={{background: "rgba(0,0,0,0)"}}>Heatmap</Tab>
+                        <Tab style={{background: "rgba(0,0,0,0)"}}>Settings</Tab>
                     </TabList>
 
                     <TabPanel>

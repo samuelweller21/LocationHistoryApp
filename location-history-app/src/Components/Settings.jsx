@@ -41,8 +41,8 @@ class Settings extends Component {
     render() {
         return (
             <div>
-                <Dropdown>
-                    <Dropdown.Toggle id="dropdown-custom-components">
+                <Dropdown className="settingsDropdown">
+                    <Dropdown.Toggle>
                         Home Country: {this.state.homeCountry}
                     </Dropdown.Toggle>
 

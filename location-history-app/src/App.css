@@ -55,7 +55,7 @@ margin10 {
   margin: 10
 }
 
-.dropdown-menu {
+.settingsDropdown {
   height: 500px;
   overflow-y: scroll;
 }

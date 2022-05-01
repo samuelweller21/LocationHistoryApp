@@ -4,6 +4,11 @@ import "./LandingPage.css";
 
 class LandingPage extends Component {
 
+    constructor() {
+        super()
+        document.title = "Location History Viewer - Welcome"
+    }
+
     render() {
         return (
 
@@ -36,7 +41,7 @@ class LandingPage extends Component {
                         <div style={{ height: 100 }}> </div>
 
                         <div>
-                            <a href="#" class="cta">
+                            <a href="/login" class="cta">
                                 <span>Log In</span>
                                 <svg width="13px" height="10px" viewBox="0 0 13 10">
                                     <path d="M1,5 L11,5"></path>
@@ -48,7 +53,7 @@ class LandingPage extends Component {
                         <div style={{ height: 100 }}> </div>
 
                         <div style={{margin: "0 auto"}}>
-                            <a href="#" class="cta">
+                            <a href="/signup" class="cta">
                                 <span>Sign Up</span>
                                 <svg width="13px" height="10px" viewBox="0 0 13 10">
                                     <path d="M1,5 L11,5"></path>
